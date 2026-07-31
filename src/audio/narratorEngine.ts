@@ -19,17 +19,33 @@ class NarratorEngine {
   private loadVoices() {
     if (!this.synth) return;
     const voices = this.synth.getVoices();
-    // Prioritize Mexican Spanish female voices, then any Mexican Spanish voice, then any Spanish female voice
-    const mexicanFemale = voices.find(
-      v => /es[-_]MX/i.test(v.lang) && /female|femenino|paulina|sabina|hilda|mia|dalia|sofia|monica|lucia|laura|silvia|esperanza/i.test(v.name)
-    );
-    const mexicanAny = voices.find(v => /es[-_]MX/i.test(v.lang));
-    const spanishFemale = voices.find(
-      v => /es/i.test(v.lang) && /female|femenino|paulina|sabina|hilda|mia|dalia|sofia|monica|lucia|laura|silvia|esperanza/i.test(v.name)
-    );
-    const spanishAny = voices.find(v => /es/i.test(v.lang));
+    if (!voices || voices.length === 0) return;
 
-    this.selectedVoice = mexicanFemale || mexicanAny || spanishFemale || spanishAny || voices[0] || null;
+    // Latin female name keywords & browser voice names
+    const femaleNameRegex = /female|femenino|paulina|sabina|hilda|mia|dalia|sofia|monica|lucia|laura|silvia|esperanza|lupe|penelope|francisca|paloma|elena|victoria|alva|soledad/i;
+    const maleNameRegex = /male|masculino|jorge|diego|carlos|miguel|pablo|enrique|raul|rodrigo|mateo|esteban|alberto/i;
+
+    const isMexican = (v: SpeechSynthesisVoice) => /es[-_]MX/i.test(v.lang);
+    const isLatin = (v: SpeechSynthesisVoice) => /es[-_](MX|419|US|AR|CO|CL|PE|GT|EC|VE|CR|CL)/i.test(v.lang);
+    const isSpanish = (v: SpeechSynthesisVoice) => /^es/i.test(v.lang);
+
+    const isFemale = (v: SpeechSynthesisVoice) => femaleNameRegex.test(v.name) || (!maleNameRegex.test(v.name));
+
+    // Priority Tier List:
+    // 1. Mexican Spanish Female Voice
+    const mexicanFemale = voices.find(v => isMexican(v) && isFemale(v));
+    // 2. Latin American Spanish Female Voice
+    const latinFemale = voices.find(v => isLatin(v) && isFemale(v));
+    // 3. Any Mexican Spanish Voice
+    const mexicanAny = voices.find(v => isMexican(v));
+    // 4. Any Latin American Spanish Voice
+    const latinAny = voices.find(v => isLatin(v));
+    // 5. Any Spanish Female Voice
+    const spanishFemale = voices.find(v => isSpanish(v) && isFemale(v));
+    // 6. Any Spanish Voice
+    const spanishAny = voices.find(v => isSpanish(v));
+
+    this.selectedVoice = mexicanFemale || latinFemale || mexicanAny || latinAny || spanishFemale || spanishAny || voices[0] || null;
   }
 
   public setEnabled(val: boolean) {
