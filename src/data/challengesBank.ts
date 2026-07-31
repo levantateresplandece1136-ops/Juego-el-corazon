@@ -542,3 +542,34 @@ export function getRandomAhorcadoWord(): { word: string; category: string; hint:
   const randomIndex = Math.floor(Math.random() * AHORCADO_WORDS_BANK.length);
   return AHORCADO_WORDS_BANK[randomIndex];
 }
+
+export const FLASH_TOPICS = [
+  { topic: 'FRUTAS Y VERDURAS', example: 'Manzana, plátano, zanahoria, uva, fresa...' },
+  { topic: 'ANIMALES (TERRESTRES O MARINOS)', example: 'Perro, león, delfín, águila, elefante...' },
+  { topic: 'PELÍCULAS O CARICATURAS ANIMADAS', example: 'Toy Story, Frozen, Mickey Mouse, Shrek...' },
+  { topic: 'POSTRES, DULCES Y GOLOSINAS', example: 'Helado, pastel, chocolate, paleta, donas...' },
+  { topic: 'SUPERHÉROES O PERSONAJES MÁGICOS', example: 'Spider-Man, Batman, Elsa, Mario, Harry Potter...' },
+  { topic: 'COSAS DE COLOR AZUL O ROJO', example: 'Cielo, manzana, zapato, pelota, camisa...' },
+  { topic: 'OBJETOS QUE ENCUENTRAS EN LA COCINA', example: 'Cuchara, plato, sartén, vaso, tenedor...' },
+  { topic: 'JUEGOS O DEPORTES QUE CONOZCAS', example: 'Fútbol, escondidas, básquetbol, ajedrez, natación...' },
+  { topic: 'PAÍSES, CIUDADES O LUGARES DEL MUNDO', example: 'México, España, París, Colombia, Japón...' },
+  { topic: 'COSAS QUE VUELAN EN EL CIELO', example: 'Pájaro, avión, cohete, mariposa, helicóptero...' },
+  { topic: 'TRANSPORTES O MEDIOS DE MOVILIDAD', example: 'Carro, autobús, tren, barco, bicicleta...' },
+  { topic: 'PRENDAS DE VESTIR O ACCESORIOS', example: 'Camisa, pantalón, calcetín, gorra, lentes...' }
+];
+
+export function getRandomFlashTopicChallenge(): Challenge {
+  const chosen = FLASH_TOPICS[Math.floor(Math.random() * FLASH_TOPICS.length)];
+  return {
+    id: `flash_topic_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+    title: `⚡ RÁFAGA RELÁMPAGO: ${chosen.topic}`,
+    category: 'basta',
+    durationSeconds: 15,
+    instructions: `¡Tienes solo 15 SEGUNDOS para decir en voz alta todas las cosas que conozcas sobre: ${chosen.topic}! (Di al menos 5 cosas en voz alta para ganar la estrella). Por ejemplo: ${chosen.example}`,
+    mode: 'solo',
+    starsReward: 2,
+    coinsReward: 5,
+    presenterPhrase: `¡Alerta relámpago de 15 segundos! ¡Menciona rápidamente todas las cosas que sepas sobre ${chosen.topic}!`
+  };
+}
+

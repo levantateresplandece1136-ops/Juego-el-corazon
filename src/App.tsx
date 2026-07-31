@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ScreenId, Player, GameSettings, BoardSpace, Challenge, HouseEvent, GameStats, RouletteOption } from './types';
 import { BOARD_SPACES } from './data/boardSpaces';
-import { getRandomChallenge } from './data/challengesBank';
+import { getRandomChallenge, getRandomFlashTopicChallenge } from './data/challengesBank';
 import { HOUSE_EVENTS } from './data/houseEvents';
 import { soundEngine } from './audio/soundEngine';
 import { narratorEngine } from './audio/narratorEngine';
@@ -121,13 +121,16 @@ export default function App() {
       setScreen('event');
     } else {
       // Pick random challenge
-      let challenge = getRandomChallenge(usedChallengeIds);
+      let challenge: Challenge;
       
       // Apply flags from previous roulette
       if (flashChallengeNextTurn) {
-        challenge = { ...challenge, durationSeconds: 15 };
+        challenge = getRandomFlashTopicChallenge();
         setFlashChallengeNextTurn(false);
+      } else {
+        challenge = getRandomChallenge(usedChallengeIds);
       }
+
       if (allPlayNextTurn) {
         challenge = { ...challenge, mode: 'todos', title: `[¡TODOS JUEGAN!] ${challenge.title}` };
         setAllPlayNextTurn(false);
