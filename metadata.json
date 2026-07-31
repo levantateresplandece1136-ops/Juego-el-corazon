@@ -1,6 +1,6 @@
 {
-  "name": "El Corazón de Aurelia",
-  "description": "Un videojuego cinematográfico con narración por voz en tiempo real, banda sonora ambiental adaptativa, partículas cinemáticas y desafíos interactivos.",
+  "name": "¡Bienvenidos a La Casa de Silvia!",
+  "description": "Party game familiar estilo Nintendo y Mario Party proyectado en TV con cientos de retos físicos, mímica, velocidad, eventos y diversión sin parar.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

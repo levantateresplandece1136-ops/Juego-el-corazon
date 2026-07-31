@@ -2,9 +2,8 @@ class NarratorEngine {
   private enabled = true;
   private synth: SpeechSynthesis | null = null;
   private selectedVoice: SpeechSynthesisVoice | null = null;
-  private speechRate = 0.88;
-  private speechPitch = 0.78;
-  private onBoundaryCallback: ((word: string, charIndex: number) => void) | null = null;
+  private speechRate = 1.05; // Fast, energetic TV host pacing
+  private speechPitch = 1.15; // Cheerful, enthusiastic pitch
   private onEndCallback: (() => void) | null = null;
 
   constructor() {
@@ -20,12 +19,17 @@ class NarratorEngine {
   private loadVoices() {
     if (!this.synth) return;
     const voices = this.synth.getVoices();
-    // Prefer Spanish male/deep narrators if available, then any Spanish voice
-    const spanishMale = voices.find(
-      v => /es/i.test(v.lang) && /male|masculino|carlos|diego|jorge|enrique|miguel|pablo|javi/i.test(v.name)
+    // Prioritize Mexican Spanish female voices, then any Mexican Spanish voice, then any Spanish female voice
+    const mexicanFemale = voices.find(
+      v => /es[-_]MX/i.test(v.lang) && /female|femenino|paulina|sabina|hilda|mia|dalia|sofia|monica|lucia|laura|silvia|esperanza/i.test(v.name)
+    );
+    const mexicanAny = voices.find(v => /es[-_]MX/i.test(v.lang));
+    const spanishFemale = voices.find(
+      v => /es/i.test(v.lang) && /female|femenino|paulina|sabina|hilda|mia|dalia|sofia|monica|lucia|laura|silvia|esperanza/i.test(v.name)
     );
     const spanishAny = voices.find(v => /es/i.test(v.lang));
-    this.selectedVoice = spanishMale || spanishAny || voices[0] || null;
+
+    this.selectedVoice = mexicanFemale || mexicanAny || spanishFemale || spanishAny || voices[0] || null;
   }
 
   public setEnabled(val: boolean) {
@@ -40,23 +44,7 @@ class NarratorEngine {
     return this.enabled;
   }
 
-  public setRate(rate: number) {
-    this.speechRate = Math.max(0.5, Math.min(1.5, rate));
-  }
-
-  public getRate(): number {
-    return this.speechRate;
-  }
-
-  public setPitch(pitch: number) {
-    this.speechPitch = Math.max(0.5, Math.min(1.5, pitch));
-  }
-
-  public speak(
-    text: string,
-    onEnd?: () => void,
-    onWord?: (word: string, charIndex: number) => void
-  ) {
+  public speak(text: string, onEnd?: () => void) {
     if (!this.enabled || !this.synth) {
       if (onEnd) onEnd();
       return;
@@ -64,7 +52,6 @@ class NarratorEngine {
 
     this.stop();
 
-    // Clean markdown/symbols for clean narration
     const cleanText = text
       .replace(/[""«»]/g, '')
       .replace(/\s+/g, ' ')
@@ -79,19 +66,11 @@ class NarratorEngine {
     if (this.selectedVoice) {
       utterance.voice = this.selectedVoice;
     }
-    utterance.lang = 'es-ES';
+    utterance.lang = this.selectedVoice?.lang || 'es-MX';
     utterance.rate = this.speechRate;
     utterance.pitch = this.speechPitch;
 
     this.onEndCallback = onEnd || null;
-    this.onBoundaryCallback = onWord || null;
-
-    utterance.onboundary = (event) => {
-      if (event.name === 'word' && this.onBoundaryCallback) {
-        const word = cleanText.substring(event.charIndex, event.charIndex + event.charLength);
-        this.onBoundaryCallback(word, event.charIndex);
-      }
-    };
 
     utterance.onend = () => {
       if (this.onEndCallback) {

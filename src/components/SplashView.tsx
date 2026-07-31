@@ -1,70 +1,87 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { soundEngine } from '../audio/soundEngine';
+import { PresenterHost } from './PresenterHost';
 
 interface SplashViewProps {
-  onStart: () => void;
+  onStartSetup: () => void;
+  presenterVoiceActive: boolean;
 }
 
-export const SplashView: React.FC<SplashViewProps> = ({ onStart }) => {
-  const handleFullscreen = () => {
-    soundEngine.playSFX('click');
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    }
-  };
+export const SplashView: React.FC<SplashViewProps> = ({
+  onStartSetup,
+  presenterVoiceActive
+}) => {
+  useEffect(() => {
+    soundEngine.startPartyBGM();
+  }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center relative z-20 select-none animate-fadeIn">
-      {/* Decorative Ancient Seal */}
-      <div className="relative w-56 h-56 sm:w-72 sm:h-72 mb-8 flex items-center justify-center">
-        <div className="absolute inset-0 rounded-full border-2 border-[#d4af37]/60" />
-        <div className="absolute inset-3 rounded-full border border-dashed border-[#8b5a2b] animate-slow-spin" />
-        <div className="absolute inset-8 rounded-full border-2 border-[#e9c96a] animate-slow-spin-reverse opacity-80" />
-        
-        {/* Glowing Heart Gem Core */}
-        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-radial from-[#e9c96a] via-[#8b5a2b] to-[#1a140c] shadow-[0_0_50px_rgba(212,175,55,0.7)] animate-pulse-glow flex items-center justify-center">
-          <span className="text-4xl sm:text-5xl text-[#fff] drop-shadow-[0_0_15px_rgba(255,255,255,0.9)]">
-            ◈
-          </span>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 flex flex-col items-center justify-center p-4 text-center select-none overflow-hidden relative">
+      {/* Floating Animated Background Decorations */}
+      <div className="absolute top-10 left-10 text-6xl animate-bounce duration-1000 opacity-60">🏠</div>
+      <div className="absolute top-20 right-12 text-5xl animate-spin duration-3000 opacity-50">⭐</div>
+      <div className="absolute bottom-12 left-16 text-6xl animate-pulse opacity-70">🎈</div>
+      <div className="absolute bottom-16 right-20 text-5xl animate-bounce duration-700 opacity-60">🐶</div>
+      <div className="absolute top-1/2 left-8 text-4xl animate-pulse opacity-40">🐱</div>
+      <div className="absolute top-1/3 right-10 text-6xl animate-bounce opacity-50">🎉</div>
+
+      <div className="z-10 max-w-4xl w-full bg-slate-900/85 backdrop-blur-lg border-4 border-yellow-400 p-6 sm:p-10 rounded-3xl shadow-2xl my-6">
+        {/* Presenter Speech Banner */}
+        <PresenterHost
+          dialogue="¡Bienvenidos a mi casa! Soy Silvia. ¡Aquí cualquier objeto o rincón se convierte en un reto salvaje!"
+          mood="excited"
+          autoSpeak={presenterVoiceActive}
+        />
+
+        <div className="inline-block bg-yellow-400 text-slate-950 font-black px-4 py-1 rounded-full uppercase text-xs sm:text-sm tracking-widest shadow-md mb-3">
+          TV Party Game Familiar • Nintendo & Jackbox Style
         </div>
-      </div>
 
-      <div className="text-xs sm:text-sm font-cinzel tracking-[0.35em] text-[#8b5a2b] uppercase mb-2">
-        Una Expedición Familiar Cinematográfica
-      </div>
+        {/* Main Title */}
+        <h1 className="text-4xl sm:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-400 to-amber-300 drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)] mb-2 uppercase tracking-tight transform hover:scale-105 transition-transform duration-300">
+          ¡BIENVENIDOS A LA CASA DE SILVIA! 🏠
+        </h1>
 
-      <h1 className="text-3xl sm:text-5xl md:text-6xl font-cinzel font-black text-gold-glow mb-4 leading-tight">
-        El Corazón de Aurelia
-      </h1>
+        <p className="text-base sm:text-2xl font-extrabold text-yellow-200 drop-shadow mb-6 italic">
+          "La casa donde cualquier cosa puede convertirse en un reto."
+        </p>
 
-      <p className="max-w-xl text-base sm:text-lg italic text-[#f5e6c8] mb-8 font-serif leading-relaxed drop-shadow">
-        Cinco cristales. Cinco virtudes. Una familia unida capaz de desvelar el tesoro milenario.
-      </p>
+        {/* Room Badges Preview */}
+        <div className="flex flex-wrap justify-center gap-2 mb-8">
+          {[
+            { name: 'Sala', icon: '🛋️', color: 'bg-amber-500' },
+            { name: 'Comedor', icon: '🍽️', color: 'bg-red-500' },
+            { name: 'Cocina', icon: '🍳', color: 'bg-emerald-500' },
+            { name: 'Patio', icon: '🌿', color: 'bg-lime-500' },
+            { name: 'Recámara', icon: '🛏️', color: 'bg-purple-500' },
+            { name: 'Baño', icon: '🛁', color: 'bg-cyan-500' },
+            { name: 'Garage', icon: '🚗', color: 'bg-slate-500' },
+            { name: 'Azotea', icon: '⭐', color: 'bg-pink-500' }
+          ].map(r => (
+            <span
+              key={r.name}
+              className={`${r.color} text-white font-black text-xs px-3 py-1.5 rounded-full shadow border border-white/40 flex items-center gap-1`}
+            >
+              {r.icon} {r.name}
+            </span>
+          ))}
+        </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md">
+        {/* Big Action Button */}
         <button
           onClick={() => {
-            soundEngine.init();
-            soundEngine.resume();
-            soundEngine.playSFX('campana');
-            onStart();
+            soundEngine.playSFX('fanfare');
+            onStartSetup();
           }}
-          className="gold-btn w-full sm:w-auto px-8 py-3.5 text-base font-cinzel font-bold tracking-widest uppercase rounded cursor-pointer"
+          className="w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 hover:from-yellow-300 hover:to-amber-300 text-slate-950 text-xl sm:text-3xl font-black uppercase rounded-2xl shadow-2xl border-4 border-white transform hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer animate-pulse"
         >
-          Comenzar la aventura
+          🎮 ¡COMENZAR LA FIESTA FAMILIAR! ⭐
         </button>
 
-        <button
-          onClick={handleFullscreen}
-          className="w-full sm:w-auto px-6 py-3 text-xs font-cinzel tracking-wider uppercase border border-[#5c3a1a] text-[#8b5a2b] hover:text-[#d4af37] hover:border-[#8b5a2b] rounded transition-colors"
-        >
-          Pantalla Completa
-        </button>
+        <p className="text-xs sm:text-sm text-pink-200 mt-4 font-bold">
+          Para 2 a 12 jugadores • Sin pantallas individuales • ¡Toda la acción ocurre en la vida real!
+        </p>
       </div>
-
-      <p className="text-xs text-[#8b5a2b] mt-8 max-w-md italic">
-        Se recomienda activar el volumen y usar audífonos para disfrutar la banda sonora adaptativa y la narración en vivo.
-      </p>
     </div>
   );
 };

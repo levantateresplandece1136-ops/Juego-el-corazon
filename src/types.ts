@@ -1,118 +1,190 @@
 export type ScreenId = 
   | 'splash'
-  | 'prologue'
-  | 'avatar'
-  | 'map'
-  | 'level'
-  | 'final'
-  | 'credits';
-
-export type BiomeId = 
-  | 'inicio'
-  | 'avatar'
-  | 'mapa'
-  | 'templo'
-  | 'selva'
-  | 'biblioteca'
-  | 'minas'
-  | 'observatorio'
+  | 'setup'
+  | 'board'
+  | 'challenge'
+  | 'event'
   | 'final';
 
-export type CrystalId = 'sabiduria' | 'valentia' | 'memoria' | 'orden' | 'esperanza';
+export type HouseRoom = 
+  | 'Sala'
+  | 'Comedor'
+  | 'Cocina'
+  | 'Patio'
+  | 'Recámara'
+  | 'Baño'
+  | 'Garage'
+  | 'Azotea';
 
-export interface CrystalInfo {
-  id: CrystalId;
+export type AvatarId = 
+  | 'chef'
+  | 'gato'
+  | 'robot'
+  | 'superheroe'
+  | 'ninja'
+  | 'pirata'
+  | 'astronauta'
+  | 'abuela'
+  | 'monstruo'
+  | 'unicornio'
+  | 'detective'
+  | 'dinosaurio';
+
+export interface AvatarInfo {
+  id: AvatarId;
   nombre: string;
+  icono: string;
   color: string;
-  glowColor: string;
-  emoji: string;
-  virtud: string;
-  simbolo: string;
+  bgGradient: string;
   descripcion: string;
 }
 
-export interface Avatar {
+export interface Player {
   id: string;
-  nombre: string;
-  titulo: string;
-  icono: string;
-  hab: string;
-  frase: string;
-  habilidadClave: string;
-  cooldownPistas: number;
+  name: string;
+  age: number;
+  avatarId: AvatarId;
+  color: string; // Hex or CSS color
+  colorBg: string;
+  photoUrl?: string;
+  stars: number;
+  coins: number;
+  position: number; // 0 to 39 space index on board
+  challengesCompleted: number;
+  fastestTime?: number;
+  badges: string[];
 }
 
-export interface InstantPhysicalChallenge {
-  titulo: string;
-  duracionSegundos: number;
-  instrucciones: string[];
-  metaObjetivo: string;
-}
+export type ChallengeCategory = 
+  | 'movimiento'
+  | 'trae_objeto'
+  | 'tres_cosas'
+  | 'ahorcado'
+  | 'mimica'
+  | 'telefono_descompuesto'
+  | 'dibuja'
+  | 'basta'
+  | 'memoria'
+  | 'risa_prohibida'
+  | 'no_digas_si'
+  | 'simon_dice'
+  | 'quien_soy'
+  | 'cooperativo';
 
-export interface EnigmaData {
-  pregunta: string;
-  pista: string;
-  respuestasCorrectas: string[];
-  opcionesMultiples: string[];
-}
-
-export interface LevelData {
-  n: number;
-  id: BiomeId;
-  escena: BiomeId;
-  cristal: CrystalId;
-  titulo: string;
-  subtitulo: string;
-  protagonista: string;
-  rol: string;
-  intro: string;
-  narracion: string;
-  objetivo: string;
-  pistasMinijuego: string[];
-  actividadesFisicas: string[];
-  desafioFisico: InstantPhysicalChallenge;
-  enigma: EnigmaData;
-  recompensa: string;
-  transicionMordrak: string;
-  sfxIntro: string;
-  sfxFinal: string;
-}
-
-export interface InventoryItem {
-  id: string;
+export interface ChallengeCategoryInfo {
+  id: ChallengeCategory;
   nombre: string;
   icono: string;
-  tipo: 'mapa' | 'cristal' | 'pergamino' | 'llave' | 'artefacto';
+  color: string;
   descripcion: string;
-  adquirido: boolean;
-  color?: string;
 }
 
-export interface PlayerAssignment {
-  playerNumber: number;
-  avatarId: string;
-  playerName?: string;
+export interface Challenge {
+  id: string;
+  title: string;
+  category: ChallengeCategory;
+  durationSeconds: number; // 5, 10, 20, 30, 45, 60
+  instructions: string;
+  targetText?: string; // For Ahorcado, Dibuja, Mímica, ¿Quién Soy?
+  itemsList?: string[]; // For Memoria or Tres Cosas
+  categoryList?: string[]; // For Basta Express
+  mode: 'solo' | 'dueto' | 'todos' | 'cooperativo';
+  starsReward: number;
+  coinsReward: number;
+  presenterPhrase: string;
+}
+
+export type SpaceType = 
+  | 'reto_solo'
+  | 'reto_dueto'
+  | 'reto_todos'
+  | 'estrella'
+  | 'cofre'
+  | 'evento'
+  | 'ruleta'
+  | 'penalizacion';
+
+export interface BoardSpace {
+  id: number; // 0 to 39
+  room: HouseRoom;
+  title: string;
+  type: SpaceType;
+  icon: string;
+  color: string;
+  description: string;
+  starBonus?: boolean;
+}
+
+export interface HouseEvent {
+  id: string;
+  title: string;
+  description: string;
+  presenterDialogue: string;
+  actionType: 
+    | 'dance_party' 
+    | 'ice_cream' 
+    | 'blackout' 
+    | 'rain' 
+    | 'naughty_dog' 
+    | 'cat_steals' 
+    | 'robot_mode' 
+    | 'sing_mode' 
+    | 'slow_motion';
+  durationSeconds: number;
+  icon: string;
+}
+
+export interface GameSettings {
+  durationMinutes: 20 | 30 | 40;
+  totalTurns: number;
+  presenterVoiceEnabled: boolean;
+  bgmActive: boolean;
+  sfxActive: boolean;
+}
+
+export interface GameStats {
+  startTime: number;
+  totalChallengesPlayed: number;
+  totalStarsAwarded: number;
+  eventsTriggered: number;
+  mostActivePlayerId?: string;
+  fastestPlayerId?: string;
+  funniestPlayerId?: string;
+}
+
+export type RouletteOptionId = 
+  | 'advance_3'
+  | 'gain_star'
+  | 'all_play'
+  | 'flash_challenge'
+  | 'swap_position'
+  | 'laugh_round'
+  | 'coop_challenge'
+  | 'minigame_surprise';
+
+export interface RouletteOption {
+  id: RouletteOptionId;
+  title: string;
+  icon: string;
+  color: string;
+  bgGradient: string;
+  description: string;
+  presenterPhrase: string;
 }
 
 export interface GameState {
   screen: ScreenId;
-  currentLevelNumber: number;
-  selectedAvatarId: string | null;
-  playerAssignments: PlayerAssignment[];
-  collectedCrystals: CrystalId[];
-  completedLevels: number[];
-  hintsRemaining: number;
-  audioMuted: boolean;
-  narratorEnabled: boolean;
-  speechRate: number;
-  activeBiome: BiomeId;
-  inventoryOpen: boolean;
-  gameStats: {
-    startTime: number;
-    minigamesSolved: number;
-    hintsUsed: number;
-    realWorldTasksCompleted: number;
-  };
+  settings: GameSettings;
+  players: Player[];
+  currentPlayerIndex: number;
+  turnCount: number;
+  currentSpaceIndex: number;
+  currentChallenge: Challenge | null;
+  currentEvent: HouseEvent | null;
+  usedChallengeIds: string[];
+  isDiceRolling: boolean;
+  lastDiceRoll: number | null;
+  audioActive: boolean;
+  presenterVoiceActive: boolean;
+  gameStats: GameStats;
 }
-
-export type MusicMood = 'ambient' | 'mystical' | 'suspense' | 'action' | 'triumph';
